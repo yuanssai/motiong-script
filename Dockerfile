@@ -1,25 +1,29 @@
-FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.21.1 as builder
+# ---- Base python ----
+FROM python:3.11 AS base
+# Create app directory
+WORKDIR /app
 
-ARG TARGETPLATFORM
-ARG BUILDPLATFORM
-ARG TARGETOS
-ARG TARGETARCH
+# ---- Dependencies ----
+FROM base AS dependencies
+COPY requirements.txt ./
+# install app dependencies
+RUN pip install -r requirements.txt
 
-WORKDIR /app/
+# ---- Copy Files/Build ----
+FROM dependencies AS build
+WORKDIR /app
+COPY . /app
+# Build / Compile if required
 
-COPY go.mod go.mod
-COPY go.sum go.sum
+# --- Release with Alpine ----
+FROM python:3.11-alpine3.18 AS release
+# Create app directory
+WORKDIR /app
 
-RUN go mod download
+COPY --from=dependencies /app/requirements.txt ./
+COPY --from=dependencies /root/.cache /root/.cache
 
-COPY . .
-
-RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-w -s" -o .
-
-FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine
-
-WORKDIR /cmd/
-
-COPY --from=builder /app/motiong-cli /cmd/motiong-cli
-
-ENTRYPOINT ["/cmd/motiong-cli"]
+# Install app dependencies
+RUN pip install -r requirements.txt
+COPY --from=build /app/ ./
+CMD [ "python3", "/app/cli.py", "hello-world"]
