@@ -26,5 +26,5 @@ COPY --from=dependencies /root/.cache /root/.cache
 # Install app dependencies
 RUN pip install -r requirements.txt
 COPY --from=build /app/ ./
-RUN chmod a+x run.sh
-CMD ["/app/run.sh"]
+RUN chmod +x run.sh
+ENTRYPOINT ["sh", "./run.sh"]
