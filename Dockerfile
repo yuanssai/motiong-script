@@ -26,4 +26,4 @@ COPY --from=dependencies /root/.cache /root/.cache
 # Install app dependencies
 RUN pip install -r requirements.txt
 COPY --from=build /app/ ./
-CMD [ "python3", "/app/cli.py", "hello-world"]
+CMD [ "python3", "/app/cli.py"]
