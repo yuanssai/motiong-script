@@ -26,4 +26,5 @@ COPY --from=dependencies /root/.cache /root/.cache
 # Install app dependencies
 RUN pip install -r requirements.txt
 COPY --from=build /app/ ./
+RUN chmod a+x run.sh
 CMD [ "python3", "/app/cli.py"]
