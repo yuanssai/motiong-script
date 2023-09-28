@@ -27,4 +27,4 @@ COPY --from=dependencies /root/.cache /root/.cache
 RUN pip install -r requirements.txt
 COPY --from=build /app/ ./
 RUN chmod a+x run.sh
-CMD ["./run.sh"]
+CMD ["/app/run.sh"]
