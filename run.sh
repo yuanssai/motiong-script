@@ -1,3 +1,3 @@
 #!/bin/bash
 
-exec python3 ./cli.py
+exec python3 ./cli.py "$@"
